@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using System.Linq.Expressions;
 
 namespace Repository.Context;
 
@@ -31,5 +32,15 @@ public class MongoDataAccessContext<TEntity> : IDataContext<TEntity> where TEnti
     public async Task DeleteAsync(TEntity entity)
     {
         await collection.DeleteOneAsync(Builders<TEntity>.Filter.Eq(e => e.id, entity.id));
+    }
+
+    public async Task<TEntity?> GetByIdAsync(string id)
+    {
+        return await collection.Find(Builders<TEntity>.Filter.Eq(e => e.id, id)).FirstOrDefaultAsync();
+    }
+
+    public async Task<List<TEntity>> GetByFilterAsync(Expression<Func<TEntity, bool>> filter)
+    {
+        return await collection.Find(filter).ToListAsync();
     }
 }
