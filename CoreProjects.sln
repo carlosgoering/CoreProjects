@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{BA0B12E2-E33E-44A8-8D4E-F03D3DF9E220}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{BA0B12E2-E33E-44A8-8D4E-F03D3DF9E220}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "Repository\Repository.csproj", "{A1D86831-BA88-4419-B962-3F8553B875BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Repository.csproj", "{A1D86831-BA88-4419-B962-3F8553B875BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Demain\Domain.csproj", "{9FA0792F-98BD-4329-A0E0-F3C4C5771C5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{F0130A4A-CFD1-4C9E-8FC4-5C1D86DC7070}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E68ED701-395B-4EEC-9C04-E56174B3EA26}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +28,10 @@ Global
 		{A1D86831-BA88-4419-B962-3F8553B875BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1D86831-BA88-4419-B962-3F8553B875BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1D86831-BA88-4419-B962-3F8553B875BA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9FA0792F-98BD-4329-A0E0-F3C4C5771C5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9FA0792F-98BD-4329-A0E0-F3C4C5771C5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9FA0792F-98BD-4329-A0E0-F3C4C5771C5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9FA0792F-98BD-4329-A0E0-F3C4C5771C5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0130A4A-CFD1-4C9E-8FC4-5C1D86DC7070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0130A4A-CFD1-4C9E-8FC4-5C1D86DC7070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0130A4A-CFD1-4C9E-8FC4-5C1D86DC7070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0130A4A-CFD1-4C9E-8FC4-5C1D86DC7070}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
