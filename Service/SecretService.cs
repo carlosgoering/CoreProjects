@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Financeiro.Service;
+namespace Service;
 
 public static class SecretService
 {
