@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System.Linq.Expressions;
 
-namespace Repository.Context;
+namespace Repository.Context.Providers;
 
 public class MongoDataAccessContext<TEntity> : IDataContext<TEntity> where TEntity : IBaseEntity
 {

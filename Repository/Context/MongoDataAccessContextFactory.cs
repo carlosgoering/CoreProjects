@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Microsoft.Extensions.Options;
 using Repository.Context.Interfaces;
+using Repository.Context.Providers;
 
 namespace Repository.Context;
 

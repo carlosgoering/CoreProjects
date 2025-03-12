@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Repository.Context.Providers;
 
 namespace Repository.Context.Interfaces;
 

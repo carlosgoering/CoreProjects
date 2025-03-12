@@ -1,3 +1,6 @@
+Before we start, some well deserved credits 
+Huge thanks to Saidur Rahman Akash this medium article helped a lot to make the SecretService (https://medium.com/@imAkash25/hashing-and-salting-passwords-in-c-0ee223f07e20)
+
 # How to Create and Use a Local NuGet Package
 
 ## Generating the NuGet Package
