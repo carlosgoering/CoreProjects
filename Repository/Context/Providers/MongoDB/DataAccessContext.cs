@@ -4,13 +4,13 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System.Linq.Expressions;
 
-namespace Repository.Context.Providers;
+namespace Repository.Context.Providers.MongoDB;
 
-public class MongoDataAccessContext<TEntity> : IDataContext<TEntity> where TEntity : IBaseEntity
+public class DataAccessContext<TEntity> : IDataContext<TEntity> where TEntity : IBaseEntity
 {
     private readonly IMongoCollection<TEntity> collection;
 
-    public MongoDataAccessContext(IOptions<Database> databaseSettings, string collectionName)
+    public DataAccessContext(IOptions<Database> databaseSettings, string collectionName)
     {
         collection = new MongoClient(databaseSettings.Value.ConnectionString)
             .GetDatabase(databaseSettings.Value.DatabaseName)
