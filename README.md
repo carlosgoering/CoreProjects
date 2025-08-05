@@ -1,3 +1,6 @@
+Before we start, some well deserved credits 
+Huge thanks to Saidur Rahman Akash this medium article helped a lot to make the SecretService (https://medium.com/@imAkash25/hashing-and-salting-passwords-in-c-0ee223f07e20)
+
 # How to Create and Use a Local NuGet Package
 
 ## Generating the NuGet Package
@@ -29,4 +32,5 @@ In the project that will consume the package, add the reference to the package u
 `bash`
 dotnet add package MySharedLibrary --version 1.0.0
 
-This will install the package from your local repository to the consuming project.
+to generate the project .dll with all references use the following command
+dotnet publish -c Release -o ./publish

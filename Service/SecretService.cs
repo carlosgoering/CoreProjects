@@ -5,6 +5,28 @@ namespace Service;
 
 public static class SecretService
 {
+    /// <summary>
+    /// Used to generate a random salt for hashing passwords
+    /// </summary>
+    /// <returns></returns>
+    public static byte[] GenerateSalt()
+    {
+        //https://medium.com/@imAkash25/hashing-and-salting-passwords-in-c-0ee223f07e20
+
+        using (var rng = new RNGCryptoServiceProvider())
+        {
+            byte[] salt = new byte[16];
+            rng.GetBytes(salt);
+            return salt;
+        }
+    }
+
+    /// <summary>
+    /// The actual hashing of the password
+    /// </summary>
+    /// <param name="salt"></param>
+    /// <param name="toEncrypt"></param>
+    /// <returns></returns>
     public static string HashPassword(byte[] salt, string toEncrypt)
     {
 
@@ -26,18 +48,6 @@ public static class SecretService
             Buffer.BlockCopy(hashedBytes, 0, hashedPasswordWithSalt, salt.Length, hashedBytes.Length);
 
             return Convert.ToBase64String(hashedPasswordWithSalt);
-        }
-    }
-
-    public static byte[] GenerateSalt()
-    {
-        //https://medium.com/@imAkash25/hashing-and-salting-passwords-in-c-0ee223f07e20
-
-        using (var rng = new RNGCryptoServiceProvider())
-        {
-            byte[] salt = new byte[16]; // Adjust the size based on your security requirements
-            rng.GetBytes(salt);
-            return salt;
         }
     }
 }

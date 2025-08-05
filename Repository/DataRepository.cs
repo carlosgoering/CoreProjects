@@ -3,11 +3,11 @@ using System.Linq.Expressions;
 
 namespace Repository;
 
-public class DataRepository<TEntity> where TEntity : IBaseEntity
+public class DataRepository<TEntity> where TEntity : class, IBaseEntity, new()
 {
-    private readonly IDataContext<TEntity> dataContext;
+    private readonly BaseDataAccessContext<TEntity> dataContext;
 
-    public DataRepository(IDataContext<TEntity> dataContext)
+    public DataRepository(BaseDataAccessContext<TEntity> dataContext)
     {
        this.dataContext = dataContext;
     }
@@ -24,15 +24,9 @@ public class DataRepository<TEntity> where TEntity : IBaseEntity
         return entity;
     }
 
-    public async Task<List<TEntity>> SelectAsync()
-    {
-        return dataContext.Query.ToList();
-    }
+    public async Task<List<TEntity>> SelectAsync() => await dataContext.SelectAsync();
 
-    public async Task<TEntity?> SelectAsync(string id)
-    {
-        return dataContext.Query.FirstOrDefault(e => e.id == id);
-    }
+    public async Task<TEntity?> SelectAsync(string id) => await dataContext.SelectByIdAsync(id);
 
     public async Task<bool> DeleteAsync(string id)
     {
@@ -46,8 +40,5 @@ public class DataRepository<TEntity> where TEntity : IBaseEntity
         return true;
     }
 
-    public async Task<List<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter)
-    {
-        return dataContext.Query.Where(filter).ToList();
-    }
+    public async Task<List<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter) => await dataContext.SelectAsync(filter);
 }
