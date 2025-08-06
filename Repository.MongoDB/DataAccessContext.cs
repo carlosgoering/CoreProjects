@@ -12,7 +12,7 @@ namespace Repository.MongoDB;
 /// If you want to know more about MongoDB, please visit: https://www.mongodb.com/docs/drivers/csharp/current/usage-examples/#std-label-csharp-usage-examples
 /// </summary>
 /// <typeparam name="TEntity"></typeparam>
-public class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where TEntity : class, IBaseEntity, new()
+internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where TEntity : class, IBaseEntity, new()
 {
     private readonly IMongoCollection<TEntity> collection;
 

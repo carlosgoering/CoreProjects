@@ -11,7 +11,7 @@ namespace Repository.SQLite;
 /// If you want to know more about SQLite, please visit: https://github.com/praeclarum/sqlite-net
 /// </summary>
 /// <typeparam name="TEntity"></typeparam>
-public class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where TEntity : class, IBaseEntity, new()
+internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where TEntity : class, IBaseEntity, new()
 {
     private readonly SQLiteAsyncConnection database;
 
