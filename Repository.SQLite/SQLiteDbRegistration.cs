@@ -8,6 +8,8 @@ namespace Repository.SQLite
     {
         public static void RegisterEntities(this IServiceCollection services, params Type[] entityTypes)
         {
+            services.AddSingleton<IEntityMapper<BaseEntity, object>>(new EntityMapper());
+
             foreach (var type in entityTypes)
             {
                 var contextType = typeof(DataAccessContext<>).MakeGenericType(type);
@@ -19,6 +21,8 @@ namespace Repository.SQLite
                     var contextInstance = Activator.CreateInstance(contextType, options, type.Name);
                     return Activator.CreateInstance(repositoryType, contextInstance);
                 });
+
+
             }
         }
     }
