@@ -1,15 +1,17 @@
 ﻿using Domain.Entities;
 using Domain.Entities.Configuration;
+using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Repository.MongoDB.Mappers;
+
 namespace Repository.MongoDB
 {
     public static class MongoDbRegistration
     {
         public static void RegisterEntities(this IServiceCollection services, params Type[] entityTypes)
         {
-            services.AddSingleton<IEntityMapper<BaseEntity, object>>(new EntityMapper());
+            services.AddSingleton<IEntityMapper<BaseEntity, Entity>, EntityMapper>();
 
             foreach (var type in entityTypes)
             {

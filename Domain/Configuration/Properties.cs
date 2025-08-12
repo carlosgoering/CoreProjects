@@ -2,7 +2,7 @@
 
 public class Properties
 {
-    public string SecretJWT { get; set; }
-    public string SecretEncript { get; set; }
+    public required string SecretJWT { get; set; }
+    public required string SecretEncript { get; set; }
 }
 

@@ -1,25 +1,24 @@
 using Domain.Entities;
+using Domain.Interfaces;
 
 namespace Repository.SQLite.Mappers;
 public class EntityMapper : IEntityMapper<BaseEntity, Entity>
 {
-    public MongoUser ToPersisted(BaseEntity domain)
+    public Entity ToPersisted(BaseEntity domain)
     {
         return new Entity
         {
-            Id = domain.Id,
-            Name = domain.Name,
-            ExternalIdentity = domain.ExternalIdentity
+            id = domain.id,
+            externalIdentity = domain.externalIdentity
         };
     }
 
-    public User ToDomain(Entity persisted)
+    public BaseEntity ToDomain(Entity persisted)
     {
         return new BaseEntity
         {
-            Id = persisted.Id,
-            Name = persisted.Name,
-            ExternalIdentity = persisted.ExternalIdentity
+            id = persisted.id,
+            externalIdentity = persisted.externalIdentity
         };
     }
 }

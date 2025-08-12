@@ -1,6 +1,9 @@
-﻿using Domain.Entities.Configuration;
+﻿using Domain.Entities;
+using Domain.Entities.Configuration;
+using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Repository.SQLite.Mappers;
 
 namespace Repository.SQLite
 {
@@ -8,7 +11,7 @@ namespace Repository.SQLite
     {
         public static void RegisterEntities(this IServiceCollection services, params Type[] entityTypes)
         {
-            services.AddSingleton<IEntityMapper<BaseEntity, object>>(new EntityMapper());
+            services.AddSingleton<IEntityMapper<BaseEntity, Entity>, EntityMapper>();
 
             foreach (var type in entityTypes)
             {
@@ -18,7 +21,7 @@ namespace Repository.SQLite
                 services.AddSingleton(repositoryType, provider =>
                 {
                     var options = provider.GetRequiredService<IOptions<Database>>();
-                    var contextInstance = Activator.CreateInstance(contextType, options, type.Name);
+                    var contextInstance = Activator.CreateInstance(contextType, options);
                     return Activator.CreateInstance(repositoryType, contextInstance);
                 });
 
