@@ -30,17 +30,17 @@ internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where
 
     public override async Task UpdateAsync(TEntity entity)
     {
-        await collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.id, entity.id), entity);
+        await collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
     }
 
     public override async Task DeleteAsync(TEntity entity)
     {
-        await collection.DeleteOneAsync(Builders<TEntity>.Filter.Eq(e => e.id, entity.id));
+        await collection.DeleteOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id));
     }
 
-    public override async Task<TEntity?> SelectByIdAsync(string id)
+    public override async Task<TEntity> SelectByIdAsync(string id)
     {
-        return await collection.Find(Builders<TEntity>.Filter.Eq(e => e.id, id)).FirstOrDefaultAsync();
+        return await collection.Find(Builders<TEntity>.Filter.Eq(e => e.Id, id)).FirstOrDefaultAsync();
     }
 
     public override async Task<List<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter)
@@ -56,6 +56,6 @@ internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where
 
     public override async Task<TEntity> SelectByExternalIdAsync(string id)
     {
-        return await collection.Find(Builders<TEntity>.Filter.Eq(e => e.externalIdentity, id)).FirstOrDefaultAsync();
+        return await collection.Find(Builders<TEntity>.Filter.Eq(e => e.ExternalId, id)).FirstOrDefaultAsync();
     }
 }

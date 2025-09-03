@@ -1,12 +1,10 @@
-﻿using Domain.Entities.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Repository.SQLite
+namespace Repository.Shared
 {
-    public static class SQLiteDbRegistration
+    public static class DbRegistration
     {
-        public static void RegisterEntities(this IServiceCollection services, params Type[] entityTypes)
+        public static void RegisterEntities(this IServiceCollection services, BaseDataAccessContext<TEntity>, params Type[] entityTypes)
         {
             foreach (var type in entityTypes)
             {

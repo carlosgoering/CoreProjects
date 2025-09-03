@@ -50,11 +50,11 @@ internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where
 
     public override async Task<TEntity> SelectByIdAsync(string id)
     {
-        return await database.Table<TEntity>().Where(x => x.id.Equals(id)).FirstOrDefaultAsync();
+        return await database.Table<TEntity>().Where(x => x.Id.Equals(id)).Take(1).FirstOrDefaultAsync();
     }
 
     public override async Task<TEntity> SelectByExternalIdAsync(string id)
     {
-        return await database.Table<TEntity>().Where(x => x.externalIdentity.Equals(id)).FirstOrDefaultAsync();
+        return await database.Table<TEntity>().Where(x => x.ExternalId.Equals(id)).Take(1).FirstOrDefaultAsync();
     }
 }

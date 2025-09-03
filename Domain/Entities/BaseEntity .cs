@@ -2,7 +2,7 @@
 
 public class BaseEntity
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
-    public string externalIdentity { get; set; } = Guid.NewGuid().ToString();
+    public required string Id { get; set; }
+    public required string ExternalId { get; set; }
 }
 
