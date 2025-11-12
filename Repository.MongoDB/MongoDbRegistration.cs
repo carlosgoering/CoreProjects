@@ -12,7 +12,7 @@ namespace Repository.MongoDB
     {
         public static void RegisterEntities(this IServiceCollection services, params Type[] entityTypes)
         {
-            BsonClassMap.RegisterClassMap<BaseEntity>(cm =>
+            BsonClassMap.RegisterClassMap<IBaseEntity>(cm =>
                     {
                         cm.AutoMap();
                         cm.MapIdProperty(c => c.Id)
@@ -27,7 +27,7 @@ namespace Repository.MongoDB
 
                 services.AddSingleton(repositoryType, provider =>
                 {
-                    var options = provider.GetRequiredService<IOptions<Database>>();
+                    var options = provider.GetRequiredService<IOptions<IDatabase>>();
                     var contextInstance = Activator.CreateInstance(contextType, options, type.Name);
                     var instance = Activator.CreateInstance(repositoryType, contextInstance);
 

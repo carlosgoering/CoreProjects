@@ -15,7 +15,7 @@ namespace Repository.SQLite
 
                 services.AddSingleton(repositoryType, provider =>
                 {
-                    var options = provider.GetRequiredService<IOptions<Database>>();
+                    var options = provider.GetRequiredService<IOptions<IDatabase>>();
                     var contextInstance = Activator.CreateInstance(contextType, options);
                     var instance = Activator.CreateInstance(repositoryType, contextInstance);
 

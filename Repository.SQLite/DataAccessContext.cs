@@ -15,7 +15,7 @@ internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where
 {
     private readonly SQLiteAsyncConnection database;
 
-    public DataAccessContext(IOptions<Database> databaseSettings)
+    public DataAccessContext(IOptions<IDatabase> databaseSettings)
     {
         var options = new SQLiteConnectionString(databaseSettings.Value.ConnectionString, true, databaseSettings.Value.ConnectionKey);
         database = new SQLiteAsyncConnection(options);
