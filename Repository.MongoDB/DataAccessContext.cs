@@ -23,39 +23,18 @@ internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where
             .GetCollection<TEntity>(collectionName);
     }
 
-    public override async Task InsertAsync(TEntity entity)
-    {
-        await collection.InsertOneAsync(entity);
-    }
+    public override async Task InsertAsync(TEntity entity) => await collection.InsertOneAsync(entity);
 
-    public override async Task UpdateAsync(TEntity entity)
-    {
-        await collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
-    }
+    public override async Task UpdateAsync(TEntity entity) => await collection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id), entity);
 
-    public override async Task DeleteAsync(TEntity entity)
-    {
-        await collection.DeleteOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id));
-    }
+    public override async Task DeleteAsync(TEntity entity) => await collection.DeleteOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id));
 
-    public override async Task<TEntity> SelectByIdAsync(string id)
-    {
-        return await collection.Find(Builders<TEntity>.Filter.Eq(e => e.Id, id)).FirstOrDefaultAsync();
-    }
+    public override async Task<TEntity> SelectByIdAsync(string id) => await collection.Find(Builders<TEntity>.Filter.Eq(e => e.Id, id)).FirstOrDefaultAsync();
 
-    public override async Task<List<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter)
-    {
-        return await collection.Find(filter).ToListAsync();
-    }
+    public override async Task<List<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter) => await collection.Find(filter).ToListAsync();
 
-    public override async Task<List<TEntity>> SelectAsync()
-    {
-        return await collection.AsQueryable().ToListAsync();
-    }
+    public override async Task<List<TEntity>> SelectAsync() => await collection.AsQueryable().ToListAsync();
 
-
-    public override async Task<TEntity> SelectByExternalIdAsync(string id)
-    {
-        return await collection.Find(Builders<TEntity>.Filter.Eq(e => e.ExternalId, id)).FirstOrDefaultAsync();
-    }
+    public override async Task<TEntity> SelectByExternalIdAsync(string id) => await collection.Find(Builders<TEntity>.Filter.Eq(e => e.ExternalId, id)).FirstOrDefaultAsync();
+ 
 }

@@ -31,7 +31,7 @@ namespace Repository.MongoDB
                     var contextInstance = Activator.CreateInstance(contextType, options, type.Name);
                     var instance = Activator.CreateInstance(repositoryType, contextInstance);
 
-                    return instance is null ? throw new Exception($"Could not create instance of type {repositoryType.FullName}") : instance;
+                    return instance ?? throw new Exception($"Could not create instance of type {repositoryType.FullName}");
                 });
 
             }

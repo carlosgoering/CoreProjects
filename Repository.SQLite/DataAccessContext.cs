@@ -23,38 +23,17 @@ internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where
         database.CreateTableAsync<TEntity>();
     }
 
-    public override async Task InsertAsync(TEntity entity)
-    {
-        await database.InsertAsync(entity);
-    }
+    public override async Task InsertAsync(TEntity entity) =>  await database.InsertAsync(entity);
 
-    public override async Task UpdateAsync(TEntity entity)
-    {
-        await database.UpdateAsync(entity);
-    }
+    public override async Task UpdateAsync(TEntity entity) => await database.UpdateAsync(entity);
 
-    public override async Task DeleteAsync(TEntity entity)
-    {
-        await database.DeleteAsync(entity);
-    }
+    public override async Task DeleteAsync(TEntity entity) => await database.DeleteAsync(entity);
 
-    public override async Task<List<TEntity>> SelectAsync()
-    {
-        return await database.Table<TEntity>().ToListAsync();
-    }
+    public override async Task<List<TEntity>> SelectAsync() => await database.Table<TEntity>().ToListAsync();
 
-    public override async Task<List<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter)
-    {
-        return await database.Table<TEntity>().Where(filter).ToListAsync();
-    }
+    public override async Task<List<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter) => await database.Table<TEntity>().Where(filter).ToListAsync();
 
-    public override async Task<TEntity> SelectByIdAsync(string id)
-    {
-        return await database.Table<TEntity>().Where(x => x.Id.Equals(id)).Take(1).FirstOrDefaultAsync();
-    }
+    public override async Task<TEntity> SelectByIdAsync(string id) => await database.Table<TEntity>().Where(x => x.Id.Equals(id)).Take(1).FirstOrDefaultAsync();
 
-    public override async Task<TEntity> SelectByExternalIdAsync(string id)
-    {
-        return await database.Table<TEntity>().Where(x => x.ExternalId.Equals(id)).Take(1).FirstOrDefaultAsync();
-    }
+    public override async Task<TEntity> SelectByExternalIdAsync(string id) => await database.Table<TEntity>().Where(x => x.ExternalId.Equals(id)).Take(1).FirstOrDefaultAsync();
 }
