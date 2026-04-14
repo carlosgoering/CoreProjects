@@ -16,7 +16,7 @@ internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where
 {
     private readonly IMongoCollection<TEntity> collection;
 
-    public DataAccessContext(IOptions<IDatabase> databaseSettings, string collectionName)
+    public DataAccessContext(IOptions<Database> databaseSettings, string collectionName)
     {
         collection = new MongoClient(databaseSettings.Value.ConnectionString)
             .GetDatabase(databaseSettings.Value.DatabaseName)

@@ -15,7 +15,7 @@ internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where
 {
     private readonly SQLiteAsyncConnection database;
 
-    public DataAccessContext(IOptions<IDatabase> databaseSettings)
+    public DataAccessContext(IOptions<Database> databaseSettings)
     {
         var options = new SQLiteConnectionString(databaseSettings.Value.ConnectionString, true, databaseSettings.Value.ConnectionKey);
         database = new SQLiteAsyncConnection(options);
@@ -33,7 +33,7 @@ internal class DataAccessContext<TEntity> : BaseDataAccessContext<TEntity> where
 
     public override async Task<List<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter) => await database.Table<TEntity>().Where(filter).ToListAsync();
 
-    public override async Task<TEntity> SelectByIdAsync(string id) => await database.Table<TEntity>().Where(x => x.Id.Equals(id)).Take(1).FirstOrDefaultAsync();
+    public override async Task<TEntity> SelectByIdAsync(string id) => await database.Table<TEntity>().FirstOrDefaultAsync(x => x.Id.Equals(id));
 
-    public override async Task<TEntity> SelectByExternalIdAsync(string id) => await database.Table<TEntity>().Where(x => x.ExternalId.Equals(id)).Take(1).FirstOrDefaultAsync();
+    public override async Task<TEntity> SelectByExternalIdAsync(string id) => await database.Table<TEntity>().FirstOrDefaultAsync(x => x.ExternalId.Equals(id));
 }

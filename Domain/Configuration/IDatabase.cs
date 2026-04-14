@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities.Configuration;
 
-public interface IDatabase
+public class Database
 {
     public string ConnectionString { get; set; }
     public string DatabaseName { get; set; }

@@ -27,7 +27,7 @@ namespace Repository.MongoDB
 
                 services.AddSingleton(repositoryType, provider =>
                 {
-                    var options = provider.GetRequiredService<IOptions<IDatabase>>();
+                    var options = provider.GetRequiredService<IOptions<Database>>();
                     var contextInstance = Activator.CreateInstance(contextType, options, type.Name);
                     var instance = Activator.CreateInstance(repositoryType, contextInstance);
 
