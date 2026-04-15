@@ -34,3 +34,6 @@ dotnet add package MySharedLibrary --version 1.0.0
 
 to generate the project .dll with all references use the following command
 dotnet publish -c Release -o ./publish
+
+or nuget package with all references use the following command
+dotnet pack -c Release -o ../nuget-local 
