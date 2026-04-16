@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <VersionPrefix>1.0.7</VersionPrefix>
+	<IsPackable>true</IsPackable>
+  </PropertyGroup>
+</Project>
