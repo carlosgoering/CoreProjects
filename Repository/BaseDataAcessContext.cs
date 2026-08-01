@@ -1,10 +1,10 @@
-﻿
-using Domain.Entities;
+﻿using Domain.Entities;
+using Domain.Interfaces;
 using System.Linq.Expressions;
 
 namespace Repository;
 
-public abstract class BaseDataAccessContext<TEntity> where TEntity : class, IBaseEntity, new()
+public abstract class BaseDataAcessContext<TEntity> : IDataAcessContext<TEntity> where TEntity : class, IBaseEntity
 {
     public abstract Task InsertAsync(TEntity entity);
 

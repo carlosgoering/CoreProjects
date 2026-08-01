@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{BA0B12E2-E33E-44A8-8D4E-F03D3DF9E220}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Repository.csproj", "{A1D86831-BA88-4419-B962-3F8553B875BA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{F0130A4A-CFD1-4C9E-8FC4-5C1D86DC7070}"
@@ -26,10 +24,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BA0B12E2-E33E-44A8-8D4E-F03D3DF9E220}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA0B12E2-E33E-44A8-8D4E-F03D3DF9E220}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA0B12E2-E33E-44A8-8D4E-F03D3DF9E220}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA0B12E2-E33E-44A8-8D4E-F03D3DF9E220}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A1D86831-BA88-4419-B962-3F8553B875BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1D86831-BA88-4419-B962-3F8553B875BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1D86831-BA88-4419-B962-3F8553B875BA}.Release|Any CPU.ActiveCfg = Release|Any CPU

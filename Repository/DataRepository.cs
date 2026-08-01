@@ -1,13 +1,15 @@
 ﻿using Domain.Entities;
+using Domain.Interfaces;
 using System.Linq.Expressions;
 
 namespace Repository;
 
-public class DataRepository<TEntity> where TEntity : class, IBaseEntity, new()
+public class DataRepository<TEntity> : IRepository<TEntity>
+    where TEntity : class, IBaseEntity, new()
 {
-    private readonly BaseDataAccessContext<TEntity> dataContext;
+    private readonly IDataAcessContext<TEntity> dataContext;
 
-    public DataRepository(BaseDataAccessContext<TEntity> dataContext)
+    public DataRepository(IDataAcessContext<TEntity> dataContext)
     {
        this.dataContext = dataContext;
     }
