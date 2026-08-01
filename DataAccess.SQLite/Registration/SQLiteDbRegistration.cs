@@ -1,7 +1,7 @@
 ﻿using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Repository.SQLite
+namespace DataAccess.SQLite
 {
     public static class SQLiteDbRegistration
     {
