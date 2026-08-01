@@ -1,6 +1,7 @@
 ﻿
 using Domain.Entities;
 using Domain.Entities.Configuration;
+using Domain.Entities.Shared;
 using Domain.Interfaces;
 using Microsoft.Extensions.Options;
 using SQLite;
@@ -30,11 +31,47 @@ internal class DataAccessContext<TEntity> : IDataAcessContext<TEntity> where TEn
 
     public async Task DeleteAsync(TEntity entity) => await database.DeleteAsync(entity);
 
-    public async Task<List<TEntity>> SelectAsync() => await database.Table<TEntity>().ToListAsync();
-
-    public async Task<List<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter) => await database.Table<TEntity>().Where(filter).ToListAsync();
-
     public async Task<TEntity> SelectByIdAsync(string id) => await database.Table<TEntity>().FirstOrDefaultAsync(x => x.Id.Equals(id));
 
     public async Task<TEntity> SelectByExternalIdAsync(string id) => await database.Table<TEntity>().FirstOrDefaultAsync(x => x.ExternalId.Equals(id));
+
+    public async Task<TEntity?> SelectAsync(string id) => await database.Table<TEntity>().FirstOrDefaultAsync(x => x.Id.Equals(id));
+
+    public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> filter) => await database.Table<TEntity>().FirstOrDefaultAsync(filter);
+
+    public async Task<IReadOnlyCollection<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter) => await database.Table<TEntity>().Where(filter).ToListAsync();
+
+    public async Task<PagedResult<TEntity>> SelectPagedAsync(Query<TEntity> query)
+    {
+        var table = database.Table<TEntity>();
+
+        if (query.Filter is not null)
+            table = table.Where(query.Filter);
+
+        var total = await table.CountAsync();
+
+        if (query.OrderBy is not null)
+        {
+            table = query.Descending
+                ? table.OrderByDescending(query.OrderBy)
+                : table.OrderBy(query.OrderBy);
+        }
+
+        var items = await table
+            .Skip(query.Skip)
+            .Take(query.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<TEntity>
+        {
+            Items = items,
+            Page = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = total
+        };
+    }
+
+    public async Task<long> CountAsync(Expression<Func<TEntity, bool>>? filter = null) => await database.Table<TEntity>().Where(filter).CountAsync();
+
+    public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter) => await database.Table<TEntity>().AnyAsync(filter);
 }

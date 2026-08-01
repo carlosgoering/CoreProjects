@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Shared;
 using Domain.Interfaces;
 using System.Linq.Expressions;
 
@@ -26,21 +27,17 @@ public class DataRepository<TEntity> : IRepository<TEntity>
         return entity;
     }
 
-    public async Task<List<TEntity>> SelectAsync() => await dataContext.SelectAsync();
-
     public async Task<TEntity?> SelectAsync(string id) => await dataContext.SelectByIdAsync(id);
 
-    public async Task<bool> DeleteAsync(string id)
-    {
-        var entity = await SelectAsync(id);
-        if (entity == null)
-        {
-            return false;
-        }
+    public async Task DeleteAsync(string id) => await dataContext.DeleteAsync(new TEntity { Id = id });
 
-        await dataContext.DeleteAsync(entity);
-        return true;
-    }
+    public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> filter) => await dataContext.FirstOrDefaultAsync(filter);
 
-    public async Task<List<TEntity>> SelectAsync(Expression<Func<TEntity, bool>> filter) => await dataContext.SelectAsync(filter);
+    public async Task<PagedResult<TEntity>> SelectPagedAsync(Query<TEntity> query) => await dataContext.SelectPagedAsync(query);
+
+    public async Task<long> CountAsync(Expression<Func<TEntity, bool>>? filter = null) => await dataContext.CountAsync(filter);
+
+    public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter) => await dataContext.ExistsAsync(filter);
+
+    public async Task<TEntity?> SelectByIdAsync(string id) => await dataContext.SelectByIdAsync(id);
 }

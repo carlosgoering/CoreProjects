@@ -1,27 +1,37 @@
-﻿using Domain.Entities;
-using Domain.Entities.Configuration;
+﻿using Domain.Entities.Configuration;
 using Domain.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.IdGenerators;
-using MongoDB.Bson.Serialization.Serializers;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 namespace Repository.MongoDB
 {
     public static class MongoDbRegistration
     {
-        public static void RegisterEntities(this IServiceCollection services)
-        {
-            BsonClassMap.RegisterClassMap<IBaseEntity>(cm =>
-                    {
-                        cm.AutoMap();
-                        cm.MapIdProperty(c => c.Id)
-                        .SetIdGenerator(StringObjectIdGenerator.Instance)
-                        .SetSerializer(new StringSerializer(BsonType.ObjectId));
-                    });
+ public static class MongoRegistration
+{
+    public static DataAccessOptions UseMongo(
+        this DataAccessOptions options,
+        IConfigurationSection configuration)
+    {
+        options.Services.Configure<Database>(configuration);
 
-            services.AddSingleton(typeof(IDataAcessContext<>), typeof(DataAccessContext<>));
-            services.AddScoped(typeof(IRepository<>), typeof(DataRepository<>));
-        }
+        options.Services.AddSingleton<IMongoClient>(sp =>
+        {
+            var database = sp.GetRequiredService<IOptions<Database>>().Value;
+
+            return new MongoClient(database.ConnectionString);
+        });
+
+        options.Services.AddSingleton<IMongoDatabase>(sp =>
+        {
+            var database = sp.GetRequiredService<IOptions<Database>>().Value;
+
+            return sp.GetRequiredService<IMongoClient>()
+                     .GetDatabase(database.DatabaseName);
+        });
+
+        options.Services.AddSingleton(typeof(IDataAcessContext<>), typeof(DataAccessContext<>));
+
+        return options;
     }
 }
