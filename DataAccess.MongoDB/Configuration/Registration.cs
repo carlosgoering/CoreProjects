@@ -1,5 +1,6 @@
 ﻿using DataAccess.Abstractions.Interfaces;
 using DataAccess.Abstractions.Models;
+using DataAccess.Core.Repository;
 using DataAccess.MongoDB.ClassMaps;
 using DataAccess.MongoDB.Context;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,7 @@ namespace DataAccess.MongoDB.Configuration
             });
 
             services.AddSingleton(typeof(IDataAccessContext<>), typeof(DataAccessContext<>));
+            services.AddScoped(typeof(IRepository<>), typeof(DataRepository<>));
 
             MongoClassMapRegistration.Register();
 

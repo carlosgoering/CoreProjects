@@ -1,5 +1,6 @@
 ﻿using DataAccess.Abstractions.Interfaces;
 using DataAccess.Abstractions.Models;
+using DataAccess.Core.Repository;
 using DataAccess.SQLite.Context;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -27,7 +28,7 @@ namespace DataAccess.SQLite.Configuration
             });
 
             services.AddSingleton(typeof(IDataAccessContext<>), typeof(DataAccessContext<>));
-
+            services.AddScoped(typeof(IRepository<>), typeof(DataRepository<>));
             return services;
         }
     }
