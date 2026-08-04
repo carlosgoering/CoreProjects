@@ -1,39 +1,158 @@
-Before we start, some well deserved credits 
-Huge thanks to Saidur Rahman Akash this medium article helped a lot to make the SecretService (https://medium.com/@imAkash25/hashing-and-salting-passwords-in-c-0ee223f07e20)
+# Using the DataAccess Library
 
-# How to Create and Use a Local NuGet Package
+The DataAccess library is database-agnostic.
 
-## Generating the NuGet Package
+The consuming application is responsible for selecting the database provider and supplying its configuration. The library receives those settings and initializes the requested provider.
 
-Compile your projects and package them into a `.nupkg` file using the following command:
+---
 
-`bash`
-dotnet pack --output ./nupkgs
+## appsettings.json
 
-This command will create the .nupkg package in the specified directory (./nupkgs).
+```json
+{
+  "DBOfChoice": "Mongo",
 
+  "MongoDBDatabase": {
+    "ConnectionString": "...",
+    "DatabaseName": "ProjectManagement"
+  },
 
-## Installing the Package in Other Projects
-Add the Local Repository as a Package Source
+  "SQLiteDBDatabase": {
+    "ConnectionString": "database.db",
+    "ConnectionKey": "",
+    "DatabaseName": "ProjectManagement"
+  }
+}
+```
 
-Add your local package repository to the `NuGet.config` file:
+`DBOfChoice` currently supports:
 
-`xml`
-<configuration>
-  <packageSources>
-    <add key="LocalPackages" value="c:\\path\\to\\nupkgs" />
-  </packageSources>
-</configuration>
+* `Mongo`
+* `Sqlite`
 
-## Add the Package Reference
+---
 
-In the project that will consume the package, add the reference to the package using the command:
+## Registering the Provider
 
-`bash`
-dotnet add package MySharedLibrary --version 1.0.0
+Register the provider during application startup.
 
-to generate the project .dll with all references use the following command
-dotnet publish -c Release -o ./publish
+```csharp
+builder.Services.AddDbProvider(builder.Configuration);
+```
 
-or nuget package with all references use the following command
-dotnet pack -c Release -o ../nuget-local 
+Example implementation:
+
+```csharp
+public static IServiceCollection AddDbProvider(
+    this IServiceCollection services,
+    IConfiguration configuration)
+{
+    var dbChoice = configuration.GetValue<string>(Definitions.DBOfChoice);
+
+    if (string.IsNullOrWhiteSpace(dbChoice))
+        throw new InvalidOperationException(
+            $"Configuration '{Definitions.DBOfChoice}' was not found.");
+
+    if (!Enum.TryParse<Definitions.DataBases>(dbChoice, true, out var selectedDb))
+        throw new InvalidOperationException(
+            $"Unsupported database provider: {dbChoice}");
+
+    var sectionName = selectedDb switch
+    {
+        Definitions.DataBases.Mongo => Definitions.MongoDbDatabaseSection,
+        Definitions.DataBases.Sqlite => Definitions.SQLiteDbDatabaseSection,
+        _ => throw new InvalidOperationException(
+            $"Unsupported database provider: {selectedDb}")
+    };
+
+    var section = configuration.GetSection(sectionName);
+
+    if (!section.Exists())
+        throw new InvalidOperationException(
+            $"Configuration section '{sectionName}' was not found.");
+
+    Action<Database> configure = options => section.Bind(options);
+
+    switch (selectedDb)
+    {
+        case Definitions.DataBases.Mongo:
+            services.AddMongo(configure);
+            break;
+
+        case Definitions.DataBases.Sqlite:
+            services.AddSqlite(configure);
+            break;
+    }
+
+    return services;
+}
+```
+
+`AddDbProvider()` is responsible for:
+
+* Reading the selected provider (`DBOfChoice`).
+* Validating that the provider is supported.
+* Validating that the corresponding configuration section exists.
+* Binding the provider configuration.
+* Initializing the selected provider.
+
+Each provider registers all required dependencies internally, including:
+
+* `IDataAccessContext<TEntity>`
+* `IRepository<TEntity>`
+* Provider-specific services (MongoDB or SQLite)
+
+The application does not need to register repositories, contexts, or provider services manually.
+
+---
+
+## Using the Repository
+
+After registering the provider, repositories can be injected normally.
+
+```csharp
+public class ProjectService : IProjectService
+{
+    private readonly IRepository<Project> repository;
+
+    public ProjectService(IRepository<Project> repository)
+    {
+        this.repository = repository;
+    }
+}
+```
+
+---
+
+## Switching Providers
+
+Changing the database provider only requires updating the application configuration.
+
+### MongoDB
+
+```json
+{
+  "DBOfChoice": "Mongo"
+}
+```
+
+### SQLite
+
+```json
+{
+  "DBOfChoice": "Sqlite"
+}
+```
+
+No application code changes are required.
+
+---
+
+## Supported Providers
+
+Currently supported providers:
+
+* MongoDB
+* SQLite
+
+Additional providers can be added by implementing a new provider registration extension following the same pattern as `AddMongo(...)` and `AddSqlite(...)`.
