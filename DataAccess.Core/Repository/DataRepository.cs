@@ -1,16 +1,15 @@
-﻿using Domain.Entities;
-using Domain.Entities.Shared;
-using Domain.Interfaces;
+﻿using DataAccess.Abstractions.Interfaces;
+using DataAccess.Abstractions.Models;
 using System.Linq.Expressions;
 
-namespace Repository;
+namespace DataAccess.Core.Repository;
 
 public class DataRepository<TEntity> : IRepository<TEntity>
     where TEntity : class, IBaseEntity, new()
 {
-    private readonly IDataAcessContext<TEntity> dataContext;
+    private readonly IDataAccessContext<TEntity> dataContext;
 
-    public DataRepository(IDataAcessContext<TEntity> dataContext)
+    public DataRepository(IDataAccessContext<TEntity> dataContext)
     {
        this.dataContext = dataContext;
     }

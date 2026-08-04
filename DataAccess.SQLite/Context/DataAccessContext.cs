@@ -1,19 +1,16 @@
-﻿
-using Domain.Entities;
-using Domain.Entities.Configuration;
-using Domain.Entities.Shared;
-using Domain.Interfaces;
+﻿using DataAccess.Abstractions.Interfaces;
+using DataAccess.Abstractions.Models;
 using Microsoft.Extensions.Options;
 using SQLite;
 using System.Linq.Expressions;
 
-namespace Repository.SQLite;
+namespace DataAccess.SQLite.Context;
 
 /// <summary>
 /// If you want to know more about SQLite, please visit: https://github.com/praeclarum/sqlite-net
 /// </summary>
 /// <typeparam name="TEntity"></typeparam>
-internal class DataAccessContext<TEntity> : IDataAcessContext<TEntity> where TEntity : class, IBaseEntity, new()
+internal class DataAccessContext<TEntity> : IDataAccessContext<TEntity> where TEntity : class, IBaseEntity, new()
 {
     private readonly SQLiteAsyncConnection database;
 
@@ -73,5 +70,5 @@ internal class DataAccessContext<TEntity> : IDataAcessContext<TEntity> where TEn
 
     public async Task<long> CountAsync(Expression<Func<TEntity, bool>>? filter = null) => await database.Table<TEntity>().Where(filter).CountAsync();
 
-    public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter) => await database.Table<TEntity>().AnyAsync(filter);
+    public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter) => await database.Table<TEntity>().Where(filter).CountAsync() > 0;
 }

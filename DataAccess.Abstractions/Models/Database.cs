@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities.Configuration;
+﻿namespace DataAccess.Abstractions.Models;
 
 public class Database
 {

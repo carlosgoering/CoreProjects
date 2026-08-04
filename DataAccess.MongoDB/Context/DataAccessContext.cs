@@ -1,35 +1,23 @@
-﻿
-using Domain.Entities;
-using Domain.Entities.Configuration;
-using Domain.Entities.Shared;
-using Domain.Interfaces;
+﻿using DataAccess.Abstractions.Interfaces;
+using DataAccess.Abstractions.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System.Linq.Expressions;
 
-namespace Repository.MongoDB;
+namespace DataAccess.MongoDB.Context;
 
 /// <summary>
 /// If you want to know more about MongoDB, please visit: https://www.mongodb.com/docs/drivers/csharp/current/usage-examples/#std-label-csharp-usage-examples
 /// </summary>
 /// <typeparam name="TEntity"></typeparam>
-internal class DataAccessContext<TEntity> : IDataAcessContext<TEntity> where TEntity : class, IBaseEntity, new()
+internal class DataAccessContext<TEntity> : IDataAccessContext<TEntity> where TEntity : class, IBaseEntity, new()
 {
     private readonly IMongoCollection<TEntity> collection;
-
-    public DataAccessContext(IOptions<Database> databaseSettings, string collectionName)
+    public DataAccessContext(IMongoDatabase database)
     {
-        collection = new MongoClient(databaseSettings.Value.ConnectionString)
-            .GetDatabase(databaseSettings.Value.DatabaseName)
-            .GetCollection<TEntity>(collectionName);
-    }
-
-    private readonly IMongoCollection<TEntity> collection;
-
-    public DataAccessContext(IMongoDatabase database, string collectionName)
-    {
-        collection = database.GetCollection<TEntity>(collectionName);
+        collection = database.GetCollection<TEntity>(
+            typeof(TEntity).Name);
     }
 
     public async Task InsertAsync(TEntity entity) => await collection.InsertOneAsync(entity);

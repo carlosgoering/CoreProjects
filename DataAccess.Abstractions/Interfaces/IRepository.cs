@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
-using Domain.Entities.Shared;
+using DataAccess.Abstractions.Models;
 
-namespace Domain.Interfaces;
+namespace DataAccess.Abstractions.Interfaces;
 
 public interface IRepository<TEntity>
 {

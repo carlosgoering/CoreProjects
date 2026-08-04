@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Domain.Entities.Shared;
+namespace DataAccess.Abstractions.Models;
 
 public sealed record Query<TEntity>
 {

@@ -1,4 +1,4 @@
-namespace Domain.Entities.Shared;
+namespace DataAccess.Abstractions.Models;
 public sealed record PagedResult<T>
 {
     public required IReadOnlyCollection<T> Items { get; init; }

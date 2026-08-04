@@ -1,10 +1,9 @@
-﻿using Domain.Entities;
-using Domain.Entities.Shared;
+﻿using DataAccess.Abstractions.Models;
 using System.Linq.Expressions;
 
-namespace Domain.Interfaces
+namespace DataAccess.Abstractions.Interfaces
 {
-    public interface IDataAcessContext<TEntity> where TEntity : class, IBaseEntity
+    public interface IDataAccessContext<TEntity> where TEntity : class, IBaseEntity
     {
         public abstract Task InsertAsync(TEntity entity);
         public abstract Task UpdateAsync(TEntity entity);

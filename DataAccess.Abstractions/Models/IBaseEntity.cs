@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities;
+﻿namespace DataAccess.Abstractions.Models;
 
 public interface IBaseEntity
 {
