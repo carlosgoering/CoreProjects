@@ -1,6 +1,6 @@
 using DataAccess.Abstractions.Interfaces;
+using DataAccess.Core.Repository;
 using Microsoft.Extensions.DependencyInjection;
-using Repository;
 
 namespace DataAccess.Core.Registration;
 
