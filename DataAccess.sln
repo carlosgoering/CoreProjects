@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.MongoDB", "DataA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.SQLite", "DataAccess.SQLite\DataAccess.SQLite.csproj", "{D3AF6423-DD31-4F54-BDDC-3F98AEDBE480}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAcess.Firestore", "DataAcess.Firestore\DataAcess.Firestore.csproj", "{6D7757B3-9EA0-44EA-9091-66C7ABECB178}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.Firestore", "DataAcess.Firestore\DataAccess.Firestore.csproj", "{6D7757B3-9EA0-44EA-9091-66C7ABECB178}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
