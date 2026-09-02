@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.7.11925.98 stable
+VisualStudioVersion = 18.7.11925.98
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E68ED701-395B-4EEC-9C04-E56174B3EA26}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,6 +15,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.MongoDB", "DataAccess.MongoDB\DataAccess.MongoDB.csproj", "{ABBCD214-F9FD-4012-BA82-FAC38D8C9FCD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.SQLite", "DataAccess.SQLite\DataAccess.SQLite.csproj", "{D3AF6423-DD31-4F54-BDDC-3F98AEDBE480}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAcess.Firestore", "DataAcess.Firestore\DataAcess.Firestore.csproj", "{6D7757B3-9EA0-44EA-9091-66C7ABECB178}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,6 +76,18 @@ Global
 		{D3AF6423-DD31-4F54-BDDC-3F98AEDBE480}.Release|x64.Build.0 = Release|Any CPU
 		{D3AF6423-DD31-4F54-BDDC-3F98AEDBE480}.Release|x86.ActiveCfg = Release|Any CPU
 		{D3AF6423-DD31-4F54-BDDC-3F98AEDBE480}.Release|x86.Build.0 = Release|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Debug|x64.Build.0 = Debug|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Debug|x86.Build.0 = Debug|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Release|x64.ActiveCfg = Release|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Release|x64.Build.0 = Release|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Release|x86.ActiveCfg = Release|Any CPU
+		{6D7757B3-9EA0-44EA-9091-66C7ABECB178}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

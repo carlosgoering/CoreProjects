@@ -154,5 +154,6 @@ Currently supported providers:
 
 * MongoDB
 * SQLite
+* Firestore
 
-Additional providers can be added by implementing a new provider registration extension following the same pattern as `AddMongo(...)` and `AddSqlite(...)`.
+Additional providers can be added by implementing a new provider registration extension following the same pattern as `AddMongo(...)`, `AddSqlite(...)`, and `AddFirestore(...)`.

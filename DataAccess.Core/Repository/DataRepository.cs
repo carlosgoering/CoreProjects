@@ -1,6 +1,5 @@
 ﻿using DataAccess.Abstractions.Interfaces;
 using DataAccess.Abstractions.Models;
-using System.Linq.Expressions;
 
 namespace DataAccess.Core.Repository;
 
@@ -11,7 +10,7 @@ public class DataRepository<TEntity> : IRepository<TEntity>
 
     public DataRepository(IDataAccessContext<TEntity> dataContext)
     {
-       this.dataContext = dataContext;
+        this.dataContext = dataContext;
     }
 
     public async Task<TEntity> InsertAsync(TEntity entity)
@@ -26,17 +25,29 @@ public class DataRepository<TEntity> : IRepository<TEntity>
         return entity;
     }
 
-    public async Task<TEntity?> SelectAsync(string id) => await dataContext.SelectByIdAsync(id);
+    public async Task DeleteAsync(string id)
+    {
+        var entity = await dataContext.SelectByIdAsync(id);
 
-    public async Task DeleteAsync(string id) => await dataContext.DeleteAsync(new TEntity { Id = id });
+        if (entity is null)
+            return;
 
-    public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> filter) => await dataContext.FirstOrDefaultAsync(filter);
+        await dataContext.DeleteAsync(entity);
+    }
 
-    public async Task<PagedResult<TEntity>> SelectPagedAsync(Query<TEntity> query) => await dataContext.SelectPagedAsync(query);
+    public Task<TEntity?> SelectByIdAsync(string id)
+        => dataContext.SelectByIdAsync(id);
 
-    public async Task<long> CountAsync(Expression<Func<TEntity, bool>>? filter = null) => await dataContext.CountAsync(filter);
+    public Task<TEntity?> FirstOrDefaultAsync(Query<TEntity> query)
+        => dataContext.FirstOrDefaultAsync(query);
 
-    public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter) => await dataContext.ExistsAsync(filter);
+    public Task<PagedResult<TEntity>> SelectPagedAsync(
+        Query<TEntity> query)
+        => dataContext.SelectPagedAsync(query);
 
-    public async Task<TEntity?> SelectByIdAsync(string id) => await dataContext.SelectByIdAsync(id);
+    public Task<long> CountAsync(Query<TEntity>? query = null)
+        => dataContext.CountAsync(query);
+
+    public Task<bool> ExistsAsync(Query<TEntity> query)
+        => dataContext.ExistsAsync(query);
 }
