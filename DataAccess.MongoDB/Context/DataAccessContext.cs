@@ -22,6 +22,8 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity>
 
         collection = database.GetCollection<TEntity>(
             typeof(TEntity).Name);
+
+        ClassMapRegistration.Register<TEntity>();
     }
     public async Task InsertAsync(TEntity entity)
     {

@@ -1,25 +1,43 @@
-using System.Reflection;
 using DataAccess.Abstractions.Models;
+using Microsoft.Extensions.Logging;
 using SQLite;
+using System.Reflection;
+using PrimaryKeyDefinition = DataAccess.Abstractions.Attributes.PrimaryKeyAttribute;
 
 namespace DataAccess.SQLite.ClassMap;
 
 internal static class ClassMapRegistration
 {
     public static async Task Register<TEntity>(
-        SQLiteAsyncConnection database)
+        SQLiteAsyncConnection database,
+        ILogger logger)
         where TEntity : class, IBaseEntity, new()
     {
         var type = typeof(TEntity);
+        var tableName = type.Name;
+
+        logger.LogInformation(
+            $"[SQLite] Registering table '{tableName}'.");
+
+        logger.LogDebug(
+            $"[SQLite] Database path: {database.DatabasePath}");
 
         var primaryKey = type
             .GetProperties()
             .SingleOrDefault(x =>
-                x.GetCustomAttribute<PrimaryKeyAttribute>() != null);
+                x.GetCustomAttribute<PrimaryKeyDefinition>() != null);
 
         if (primaryKey is null)
-            throw new InvalidOperationException(
+        {
+            var exception = new InvalidOperationException(
                 $"Entity '{type.Name}' must define a [PrimaryKey].");
+
+            logger.LogError(
+                exception,
+                $"[SQLite] Failed to register table '{tableName}'.");
+
+            throw exception;
+        }
 
         var columns = type
             .GetProperties()
@@ -28,22 +46,58 @@ internal static class ClassMapRegistration
             {
                 var sqlType = GetSqlType(x.PropertyType);
 
-                var definition = $"\"{x.Name}\" {sqlType}";
+                var definition =
+                    $"\"{x.Name}\" {sqlType}";
 
                 if (x == primaryKey)
                     definition += " PRIMARY KEY";
 
                 return definition;
-            });
+            })
+            .ToArray();
 
         var sql = $"""
-            CREATE TABLE IF NOT EXISTS "{type.Name}"
+            CREATE TABLE IF NOT EXISTS "{tableName}"
             (
                 {string.Join(",\n", columns)}
             );
             """;
 
-        await database.ExecuteAsync(sql);
+        logger.LogDebug(
+            $"[SQLite] SQL for '{tableName}':{Environment.NewLine}{sql}");
+
+        try
+        {
+            await database.ExecuteAsync(sql);
+
+            logger.LogInformation(
+                $"[SQLite] Table '{tableName}' created/verified successfully.");
+
+            var tables = await database.QueryAsync<TableInfo>(
+                "SELECT name FROM sqlite_master WHERE type = 'table';");
+
+            logger.LogDebug(
+                $"[SQLite] Tables currently present in database '{database.DatabasePath}':");
+
+            foreach (var table in tables)
+            {
+                logger.LogDebug(
+                    $"[SQLite] Table: {table.Name}");
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                $"[SQLite] Failed to create table '{tableName}'.");
+
+            throw;
+        }
+    }
+
+    private sealed class TableInfo
+    {
+        public string Name { get; set; } = string.Empty;
     }
 
     private static string GetSqlType(Type type)

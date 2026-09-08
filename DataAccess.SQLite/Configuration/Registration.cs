@@ -11,14 +11,16 @@ namespace DataAccess.SQLite.Configuration
     public static class Registration
     {
         public static IServiceCollection AddSqlite(
-       this IServiceCollection services,
-       Action<Database> configure)
+            this IServiceCollection services,
+            Action<Database> configure)
         {
             services.Configure(configure);
 
             services.AddSingleton(sp =>
             {
-                var options = sp.GetRequiredService<IOptions<Database>>().Value;
+                var options = sp
+                    .GetRequiredService<IOptions<Database>>()
+                    .Value;
 
                 return new SQLiteAsyncConnection(
                     new SQLiteConnectionString(
@@ -27,8 +29,14 @@ namespace DataAccess.SQLite.Configuration
                         options.ConnectionKey));
             });
 
-            services.AddSingleton(typeof(IDataAccessContext<>), typeof(DataAccessContext<>));
-            services.AddScoped(typeof(IRepository<>), typeof(DataRepository<>));
+            services.AddSingleton(
+                typeof(IDataAccessContext<>),
+                typeof(DataAccessContext<>));
+
+            services.AddScoped(
+                typeof(IRepository<>),
+                typeof(DataRepository<>));
+
             return services;
         }
     }

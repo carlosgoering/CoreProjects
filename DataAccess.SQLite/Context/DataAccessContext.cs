@@ -1,9 +1,11 @@
 ﻿using DataAccess.Abstractions.Interfaces;
 using DataAccess.Abstractions.Models;
 using DataAccess.SQLite.ClassMap;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 using SQLite;
 using System.Linq.Expressions;
+using System.Reflection;
+using PrimaryKeyDefinition = DataAccess.Abstractions.Attributes.PrimaryKeyAttribute;
 
 namespace DataAccess.SQLite.Context;
 
@@ -14,32 +16,115 @@ namespace DataAccess.SQLite.Context;
 internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> where TEntity : class, IBaseEntity, new()
 {
     private readonly SQLiteAsyncConnection database;
-
-    public DataAccessContext(IOptions<Database> databaseSettings)
+    private readonly ILogger<DataAccessContext<TEntity>> logger;
+    private readonly Task initialization;
+    public DataAccessContext(SQLiteAsyncConnection database, ILogger<DataAccessContext<TEntity>> logger)
     {
-        var options = new SQLiteConnectionString(databaseSettings.Value.ConnectionString, true, databaseSettings.Value.ConnectionKey);
-        database = new SQLiteAsyncConnection(options);
+        this.logger = logger;
 
-        _ = ClassMapRegistration.Register<TEntity>(database);
+        this.database = database;
+
+        initialization = ClassMapRegistration.Register<TEntity>(database, logger);
     }
 
     public async Task InsertAsync(TEntity entity)
     {
+        await initialization;
         await database.InsertAsync(entity);
     }
 
     public async Task UpdateAsync(TEntity entity)
     {
-        await database.UpdateAsync(entity);
+        await initialization;
+
+        var primaryKey = GetPrimaryKeyProperty();
+
+        var primaryKeyValue = primaryKey.GetValue(entity);
+
+        if (primaryKeyValue is null)
+        {
+            throw new InvalidOperationException(
+                $"Entity '{typeof(TEntity).Name}' has a null primary key.");
+        }
+
+        var properties = typeof(TEntity)
+            .GetProperties()
+            .Where(x =>
+                x.CanRead &&
+                x.CanWrite &&
+                x != primaryKey)
+            .ToArray();
+
+        var setClause = string.Join(
+            ", ",
+            properties.Select(x => $"\"{x.Name}\" = ?"));
+
+        var values = properties
+            .Select(x => x.GetValue(entity))
+            .Append(primaryKeyValue)
+            .ToArray();
+
+        var tableName = typeof(TEntity).Name;
+
+        var sql = $"""
+        UPDATE "{tableName}"
+        SET {setClause}
+        WHERE "{primaryKey.Name}" = ?
+        """;
+
+        logger.LogDebug(
+            $"[SQLite] UPDATE '{tableName}' WHERE '{primaryKey.Name}' = '{primaryKeyValue}'");
+
+        await database.ExecuteAsync(sql, values);
     }
 
     public async Task DeleteAsync(TEntity entity)
     {
-        await database.DeleteAsync(entity);
+        await initialization;
+
+        var primaryKey = GetPrimaryKeyProperty();
+
+        var primaryKeyValue = primaryKey.GetValue(entity);
+
+        if (primaryKeyValue is null)
+        {
+            throw new InvalidOperationException(
+                $"Entity '{typeof(TEntity).Name}' has a null primary key.");
+        }
+
+        var tableName = typeof(TEntity).Name;
+
+        var sql = $"""
+        DELETE FROM "{tableName}"
+        WHERE "{primaryKey.Name}" = ?
+        """;
+
+        logger.LogDebug(
+            $"[SQLite] DELETE '{tableName}' WHERE '{primaryKey.Name}' = '{primaryKeyValue}'");
+
+        await database.ExecuteAsync(
+            sql,
+            primaryKeyValue);
+    }
+
+    private static PropertyInfo GetPrimaryKeyProperty()
+    {
+        var primaryKey = typeof(TEntity)
+            .GetProperties()
+            .SingleOrDefault(x =>
+                x.GetCustomAttribute<PrimaryKeyDefinition>() is not null);
+
+        return primaryKey
+            ?? throw new InvalidOperationException(
+                $"Entity '{typeof(TEntity).Name}' must define a [PrimaryKey].");
     }
 
     public async Task<TEntity?> SelectByIdAsync(string id)
     {
+        await initialization;
+
+        logger.LogDebug($"[SQLite] SELECT '{typeof(TEntity).Name}' WHERE Id = '{id}'");
+
         return await database
             .Table<TEntity>()
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -48,6 +133,10 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
     public async Task<TEntity?> FirstOrDefaultAsync(
         Query<TEntity> query)
     {
+        await initialization;
+
+        logger.LogDebug($"[SQLite] FirstOrDefault - Entity: {typeof(TEntity).Name}");
+
         var table = ApplyFilters(
             database.Table<TEntity>(),
             query);
@@ -60,6 +149,8 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
     public async Task<IReadOnlyCollection<TEntity>> SelectAsync(
         Query<TEntity> query)
     {
+        await initialization;
+
         var table = ApplyFilters(
             database.Table<TEntity>(),
             query);
@@ -75,6 +166,8 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
     public async Task<PagedResult<TEntity>> SelectPagedAsync(
         Query<TEntity> query)
     {
+        await initialization;
+
         var table = ApplyFilters(
             database.Table<TEntity>(),
             query);
@@ -100,6 +193,8 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
     public async Task<long> CountAsync(
         Query<TEntity>? query = null)
     {
+        await initialization;
+
         var table = database.Table<TEntity>();
 
         if (query is not null)
@@ -110,6 +205,8 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
 
     public async Task<bool> ExistsAsync(Query<TEntity> query)
     {
+        await initialization;
+
         var table = ApplyFilters(
             database.Table<TEntity>(),
             query);

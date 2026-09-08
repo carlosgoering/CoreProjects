@@ -35,8 +35,6 @@ namespace DataAccess.MongoDB.Configuration
             services.AddSingleton(typeof(IDataAccessContext<>), typeof(DataAccessContext<>));
             services.AddScoped(typeof(IRepository<>), typeof(DataRepository<>));
 
-            MongoClassMapRegistration.Register();
-
             return services;
         }
     }
