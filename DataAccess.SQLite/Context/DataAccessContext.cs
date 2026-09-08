@@ -1,5 +1,6 @@
 ﻿using DataAccess.Abstractions.Interfaces;
 using DataAccess.Abstractions.Models;
+using DataAccess.SQLite.ClassMap;
 using Microsoft.Extensions.Options;
 using SQLite;
 using System.Linq.Expressions;
@@ -19,7 +20,7 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
         var options = new SQLiteConnectionString(databaseSettings.Value.ConnectionString, true, databaseSettings.Value.ConnectionKey);
         database = new SQLiteAsyncConnection(options);
 
-        database.CreateTableAsync<TEntity>();
+        _ = ClassMapRegistration.Register<TEntity>(database);
     }
 
     public async Task InsertAsync(TEntity entity)

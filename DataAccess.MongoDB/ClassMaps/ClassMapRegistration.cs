@@ -1,30 +1,41 @@
-﻿using DataAccess.Abstractions.Models;
-using MongoDB.Bson;
+﻿using System.Reflection;
+using DataAccess.Abstractions.Attributes;
+using DataAccess.Abstractions.Models;
 using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.IdGenerators;
-using MongoDB.Bson.Serialization.Serializers;
 
 namespace DataAccess.MongoDB.ClassMaps
 {
-    internal static class MongoClassMapRegistration
+internal static class ClassMapRegistration
+{
+    private static readonly HashSet<Type> registeredTypes = [];
+
+    public static void Register<TEntity>()
+        where TEntity : class, IBaseEntity, new()
     {
-        private static bool initialized;
+        var type = typeof(TEntity);
 
-        public static void Register()
+        if (registeredTypes.Contains(type))
+            return;
+
+        var primaryKey = type
+            .GetProperties()
+            .SingleOrDefault(x =>
+                x.GetCustomAttribute<PrimaryKeyAttribute>() != null);
+
+        if (primaryKey == null)
+            throw new InvalidOperationException(
+                $"Entity '{type.Name}' must have a [PrimaryKey].");
+
+        BsonClassMap.RegisterClassMap<TEntity>(cm =>
         {
-            if (initialized)
-                return;
+            cm.AutoMap();
 
-            initialized = true;
+            var member = cm.GetMemberMap(primaryKey.Name);
 
-            BsonClassMap.RegisterClassMap<IBaseEntity>(cm =>
-            {
-                cm.AutoMap();
+            cm.SetIdMember(member);
+        });
 
-                cm.MapIdProperty(x => x.Id)
-                    .SetIdGenerator(StringObjectIdGenerator.Instance)
-                    .SetSerializer(new StringSerializer(BsonType.ObjectId));
-            });
-        }
+        registeredTypes.Add(type);
     }
+}
 }

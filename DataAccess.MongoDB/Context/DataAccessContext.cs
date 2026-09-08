@@ -1,5 +1,6 @@
 ﻿using DataAccess.Abstractions.Interfaces;
 using DataAccess.Abstractions.Models;
+using DataAccess.MongoDB.ClassMaps;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -17,6 +18,8 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity>
     private readonly IMongoCollection<TEntity> collection;
     public DataAccessContext(IMongoDatabase database)
     {
+        ClassMapRegistration.Register<TEntity>();
+
         collection = database.GetCollection<TEntity>(
             typeof(TEntity).Name);
     }
