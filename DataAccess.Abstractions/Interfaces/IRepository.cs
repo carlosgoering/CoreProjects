@@ -20,4 +20,5 @@ public interface IRepository<TEntity>
     Task<long> CountAsync(Query<TEntity>? query = null);
 
     Task<bool> ExistsAsync(Query<TEntity> query);
+    Task<IReadOnlyCollection<TEntity>> SelectAsync(Query<TEntity> query);
 }

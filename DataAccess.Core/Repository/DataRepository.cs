@@ -50,4 +50,7 @@ public class DataRepository<TEntity> : IRepository<TEntity>
 
     public Task<bool> ExistsAsync(Query<TEntity> query)
         => dataContext.ExistsAsync(query);
+
+    public Task<IReadOnlyCollection<TEntity>> SelectAsync(Query<TEntity> query)
+        => dataContext.SelectAsync(query);
 }
