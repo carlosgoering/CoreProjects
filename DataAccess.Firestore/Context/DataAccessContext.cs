@@ -202,6 +202,13 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity>
                     filter.Field,
                     filter.Value),
 
+            QueryOperator.In =>
+               query.WhereIn(
+                   filter.Field,
+                   filter.Value as IEnumerable<object>
+                       ?? throw new ArgumentException(
+                       "The value of an 'In' filter must be a collection.")),
+
             _ => throw new NotSupportedException(
                 $"Operator '{filter.Operator}' is not supported by Firestore.")
         };

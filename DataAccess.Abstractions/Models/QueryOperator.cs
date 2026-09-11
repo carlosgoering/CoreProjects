@@ -9,5 +9,6 @@ public enum QueryOperator
     GreaterThanOrEqual,
 
     LessThan,
-    LessThanOrEqual
+    LessThanOrEqual,
+    In
 }

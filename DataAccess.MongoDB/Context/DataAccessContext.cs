@@ -4,6 +4,7 @@ using DataAccess.MongoDB.ClassMaps;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using System.Collections;
 using System.Linq.Expressions;
 
 namespace DataAccess.MongoDB.Context;
@@ -166,8 +167,26 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity>
             QueryOperator.LessThanOrEqual =>
                 builder.Lte(filter.Field, filter.Value),
 
+            QueryOperator.In => 
+                BuildInFilter(builder, filter),
+
             _ => throw new NotSupportedException(
                 $"Operator '{filter.Operator}' is not supported by MongoDB.")
         };
+    }
+
+    private static FilterDefinition<TEntity> BuildInFilter(
+    FilterDefinitionBuilder<TEntity> builder,
+    QueryFilter filter)
+    {
+        if (filter.Value is not IEnumerable values)
+        {
+            throw new ArgumentException(
+                $"The value of an 'In' filter must be a collection.");
+        }
+
+        return builder.In(
+            filter.Field,
+            values.Cast<object>());
     }
 }

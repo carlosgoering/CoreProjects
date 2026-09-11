@@ -3,6 +3,7 @@ using DataAccess.Abstractions.Models;
 using DataAccess.SQLite.ClassMap;
 using Microsoft.Extensions.Logging;
 using SQLite;
+using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection;
 using PrimaryKeyDefinition = DataAccess.Abstractions.Attributes.PrimaryKeyAttribute;
@@ -280,7 +281,7 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
     }
 
     private static Expression<Func<TEntity, bool>> CreateExpression(
-        QueryFilter filter)
+    QueryFilter filter)
     {
         var parameter = Expression.Parameter(
             typeof(TEntity),
@@ -299,29 +300,55 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
             parameter,
             property);
 
-        var value = Expression.Constant(
-            ConvertValue(filter.Value, property.PropertyType),
-            property.PropertyType);
-
         Expression body = filter.Operator switch
         {
+            QueryOperator.In =>
+                CreateInExpression(
+                    member,
+                    property.PropertyType,
+                    filter.Value),
+
             QueryOperator.Equal =>
-                Expression.Equal(member, value),
+                Expression.Equal(
+                    member,
+                    Expression.Constant(
+                        ConvertValue(filter.Value, property.PropertyType),
+                        property.PropertyType)),
 
             QueryOperator.NotEqual =>
-                Expression.NotEqual(member, value),
+                Expression.NotEqual(
+                    member,
+                    Expression.Constant(
+                        ConvertValue(filter.Value, property.PropertyType),
+                        property.PropertyType)),
 
             QueryOperator.GreaterThan =>
-                Expression.GreaterThan(member, value),
+                Expression.GreaterThan(
+                    member,
+                    Expression.Constant(
+                        ConvertValue(filter.Value, property.PropertyType),
+                        property.PropertyType)),
 
             QueryOperator.GreaterThanOrEqual =>
-                Expression.GreaterThanOrEqual(member, value),
+                Expression.GreaterThanOrEqual(
+                    member,
+                    Expression.Constant(
+                        ConvertValue(filter.Value, property.PropertyType),
+                        property.PropertyType)),
 
             QueryOperator.LessThan =>
-                Expression.LessThan(member, value),
+                Expression.LessThan(
+                    member,
+                    Expression.Constant(
+                        ConvertValue(filter.Value, property.PropertyType),
+                        property.PropertyType)),
 
             QueryOperator.LessThanOrEqual =>
-                Expression.LessThanOrEqual(member, value),
+                Expression.LessThanOrEqual(
+                    member,
+                    Expression.Constant(
+                        ConvertValue(filter.Value, property.PropertyType),
+                        property.PropertyType)),
 
             _ => throw new NotSupportedException(
                 $"Operator '{filter.Operator}' is not supported by SQLite.")
@@ -355,5 +382,36 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
         return Convert.ChangeType(
             value,
             underlyingType);
+    }
+
+    private static Expression CreateInExpression(
+        Expression member,
+        Type propertyType,
+        object? value)
+    {
+        if (value is not IEnumerable values)
+        {
+            throw new ArgumentException(
+                "The value of an 'In' filter must be a collection.");
+        }
+
+        var convertedValues = values
+            .Cast<object?>()
+            .Select(x => ConvertValue(x, propertyType))
+            .ToArray();
+
+        var array = Array.CreateInstance(
+            propertyType,
+            convertedValues.Length);
+
+        for (var i = 0; i < convertedValues.Length; i++)
+            array.SetValue(convertedValues[i], i);
+
+        return Expression.Call(
+            typeof(Enumerable),
+            nameof(Enumerable.Contains),
+            [propertyType],
+            Expression.Constant(array),
+            member);
     }
 }
