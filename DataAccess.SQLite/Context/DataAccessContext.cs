@@ -6,6 +6,7 @@ using SQLite;
 using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using PrimaryKeyDefinition = DataAccess.Abstractions.Attributes.PrimaryKeyAttribute;
 
 namespace DataAccess.SQLite.Context;
@@ -152,6 +153,9 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
     {
         await initialization;
 
+        if (HasInFilter(query))
+            return await ExecuteInQueryAsync(query);
+
         var table = ApplyFilters(
             database.Table<TEntity>(),
             query);
@@ -221,9 +225,10 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
     {
         foreach (var filter in query.Filters)
         {
-            var expression = CreateExpression(filter);
+            if (filter.Operator == QueryOperator.In)
+                continue;
 
-            table = table.Where(expression);
+            table = table.Where(CreateExpression(filter));
         }
 
         return table;
@@ -390,15 +395,16 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
         object? value)
     {
         if (value is not IEnumerable values)
-        {
             throw new ArgumentException(
                 "The value of an 'In' filter must be a collection.");
-        }
 
         var convertedValues = values
             .Cast<object?>()
             .Select(x => ConvertValue(x, propertyType))
             .ToArray();
+
+        if (convertedValues.Length == 0)
+            return Expression.Constant(false);
 
         var array = Array.CreateInstance(
             propertyType,
@@ -414,4 +420,94 @@ internal sealed class DataAccessContext<TEntity> : IDataAccessContext<TEntity> w
             Expression.Constant(array),
             member);
     }
+
+    private async Task<List<TEntity>> ExecuteInQueryAsync(
+        Query<TEntity> query)
+    {
+        var tableName = typeof(TEntity).Name;
+        var conditions = new List<string>();
+        var parameters = new List<object>();
+
+        foreach (var filter in query.Filters)
+        {
+            var property = typeof(TEntity).GetProperty(filter.Field)
+                ?? throw new InvalidOperationException(
+                    $"Property '{filter.Field}' was not found on '{typeof(TEntity).Name}'.");
+
+            if (filter.Operator == QueryOperator.In)
+            {
+                if (filter.Value is not IEnumerable values)
+                    throw new ArgumentException(
+                        "The value of an 'In' filter must be a collection.");
+
+                var convertedValues = values
+                    .Cast<object?>()
+                    .Select(x => ConvertValue(x, property.PropertyType))
+                    .ToArray();
+
+                if (convertedValues.Length == 0)
+                    return [];
+
+                var placeholders = string.Join(
+                    ", ",
+                    Enumerable.Repeat("?", convertedValues.Length));
+
+                conditions.Add(
+                    $"\"{filter.Field}\" IN ({placeholders})");
+
+                parameters.AddRange(convertedValues!);
+
+                continue;
+            }
+
+            var value = ConvertValue(
+                filter.Value,
+                property.PropertyType);
+
+            var sqlOperator = filter.Operator switch
+            {
+                QueryOperator.Equal => "=",
+                QueryOperator.NotEqual => "<>",
+                QueryOperator.GreaterThan => ">",
+                QueryOperator.GreaterThanOrEqual => ">=",
+                QueryOperator.LessThan => "<",
+                QueryOperator.LessThanOrEqual => "<=",
+
+                _ => throw new NotSupportedException(
+                    $"Operator '{filter.Operator}' is not supported by SQLite.")
+            };
+
+            conditions.Add(
+                $"\"{filter.Field}\" {sqlOperator} ?");
+
+            parameters.Add(value!);
+        }
+
+        var sql = new StringBuilder(
+            $"SELECT * FROM \"{tableName}\"");
+
+        if (conditions.Count > 0)
+        {
+            sql.Append(" WHERE ");
+            sql.Append(string.Join(" AND ", conditions));
+        }
+
+        if (query.Order is not null)
+        {
+            sql.Append(
+                $" ORDER BY \"{query.Order.Field}\" " +
+                (query.Order.Descending ? "DESC" : "ASC"));
+        }
+
+        sql.Append($" LIMIT {query.PageSize}");
+        sql.Append($" OFFSET {query.Skip}");
+
+        return await database.QueryAsync<TEntity>(
+            sql.ToString(),
+            parameters.ToArray());
+    }
+
+    private static bool HasInFilter(Query<TEntity> query) =>
+        query.Filters.Any(x => x.Operator == QueryOperator.In);
+
 }
